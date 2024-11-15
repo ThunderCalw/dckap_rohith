@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .module-tree {
+            
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-cases {
+            margin-top: 20px;
+        }
+        .heading-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to left, #327dbe 60%, #054a83 40%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 0px;
+      position: relative;
+    }
+
+    .heading-container h3 {
+      margin: 0;
+      z-index: 1;
+    }
+
+    .heading-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      border-radius: 5px;
+    }
+
+    .add-button {
+      background-color: #327dbe;
+      color: #f3f6f9;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 1;
+    }
+    .add-buttons{
+      background-color: #054a83;
+      color: #f3f6f9;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 1;
+    }
+    .add-button:hover {
+      background-color: #5dc5eb;
+    }
+    .short-bg {
+        background-color:#37aed6; 
+                        
+        padding: 10px;            
+        margin: 0 auto;           
+        text-align: center;       
+        border-radius: 0;
+        color: white;
+        max-width: 100px; 
+        white-space: nowrap;
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+    </style>
+</head>
+<body>
+    <div class="container" >
+        <div class="row">
+            <!-- Module Section  -->
+            <div class="col-md-4" style="height: 500px;  padding: 10px; display: flex; flex-direction: column;">
+                <div class="module-tree" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="heading-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="background-color: #054a83; color: white; margin: 0; padding: 10px;">Modules</h3>
+                        <button class="add-button" onclick="openAddModuleModal()" >
+                            + Add
+                        </button>
+                        <button class="add-button" onclick="deleteModule()"><i class="fa fa-trash-o" style="font-size:20px"></i></button>
+                          
+                    </div>
+                    <div id="moduleTree" style="flex: 1; overflow-y: auto;"></div>
+                </div>
+            
+            </div>
+            <div class="col-md-8" >
+                <div class="test-cases">
+                    <h3 id="testCasesHeader" >Select a module to view test cases</h3>
+                    <div id="testCasesList"></div>
+                    <button style = "border: none;"" onclick="openAddTestCaseModal()" id="addTestCaseBtn">
+                        
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Module Modal -->
+    <div class="modal fade" id="addModuleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Module</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addModuleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="moduleName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="moduleDescription"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Parent Module</label>
+                            <select class="form-control" id="moduleParent"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddModule()">Add Module</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Test Case Modal -->
+    <div class="modal fade" id="addTestCaseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Test Case</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTestCaseForm">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" id="testCaseTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="testCaseDescription"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddTestCase()">Add Test Case</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Test Case Modal -->
+    <div class="modal fade" id="editTestCaseModal" tabindex="-1" aria-labelledby="editTestCaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editTestCaseModalLabel">Edit Test Case</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="editTestCaseTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control" id="editTestCaseTitle">
+                </div>
+                <div class="mb-3">
+                  <label for="editTestCaseDescription" class="form-label">Description</label>
+                  <textarea class="form-control" id="editTestCaseDescription"></textarea>
+                </div>
+                
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="saveEditedTestCase">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- view Test Case Modal -->
+    <div class="modal fade" id="viewTestCaseModal" tabindex="-1" aria-labelledby="viewTestCaseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="viewTestCaseModalLabel">View Test Case</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="viewTestCaseTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control" id="viewTestCaseTitle" readonly>
+                </div>
+                <div class="mb-3">
+                  <label for="viewTestCaseDescription" class="form-label">Description</label>
+                  <textarea class="form-control" id="viewTestCaseDescription" readonly></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="viewTestCaseAttachment" class="form-label">Attachment</label>
+                    <div id="viewTestCaseAttachment"></div>
+                </div>
+        
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit module Modal -->
+      <div id="editModuleModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Module</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editModuleName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editModuleName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editModuleDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editModuleDescription"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editModuleParent" class="form-label">Parent Module</label>
+                        <select class="form-control" id="editModuleParent">
+                            <option value="">No Parent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveModuleChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--file upload-->
+    <div class="modal fade" id="uploadFileModal" tabindex="-1" aria-labelledby="uploadFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadFileModalLabel">Upload File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadFileForm" enctype="multipart/form-data">
+                        <input type="hidden" id="uploadTestCaseId">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Choose File</label>
+                            <input type="file" class="form-control" id="fileInput" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitFileUpload()">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+    <script>
+        let currentModuleId = null;
+        let moduleModal = null;
+        let testCaseModal = null;
+        const treeData = {{ tree|tojson|safe }};
+
+        $(document).ready(function() {
+
+            moduleModal = new bootstrap.Modal(document.getElementById('addModuleModal'));
+            testCaseModal = new bootstrap.Modal(document.getElementById('addTestCaseModal'));
+
+            initializeTree();
+            updateParentModuleSelect();
+
+            document.getElementById('addTestCaseBtn').disabled = true;
+        });
+
+        function initializeTree() {
+            $('#moduleTree').jstree({
+                'core': {
+                    'data': treeData,
+                    'themes': {
+                        'responsive': true
+                    },
+                    'check_callback': true
+                }
+            }).on('select_node.jstree', function(e, data) {
+                currentModuleId = data.node.id;
+                document.getElementById('addTestCaseBtn').disabled = false;
+                loadModuleDetails(currentModuleId);
+            });
+        }
+
+        function openAddModuleModal() {
+            $('#addModuleForm')[0].reset();
+            moduleModal.show();
+        }
+
+        function openAddTestCaseModal() {
+            if (!currentModuleId) {
+                alert('Please select a module first');
+                return;
+            }
+            $('#addTestCaseForm')[0].reset();
+            testCaseModal.show();
+        }
+
+        function submitAddModule() {
+            const moduleNameInput = document.getElementById('moduleName');
+            if (!moduleNameInput.value.trim()) {
+                alert('Module name is required');
+                return;
+            }
+
+            const data = {
+                name: moduleNameInput.value.trim(),
+                description: document.getElementById('moduleDescription').value.trim(),
+                parent_id: document.getElementById('moduleParent').value || null
+            };
+
+            fetch('/module', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(newModule => {
+                // Add the new node to the tree
+                const parentId = data.parent_id || '#';
+                $('#moduleTree').jstree('create_node', 
+                    parentId,
+                    { 
+                        id: newModule.id.toString(),
+                        text: newModule.name,
+                        children: []
+                    },
+                    'last'
+                );
+
+                moduleModal.hide();
+                $('#addModuleForm')[0].reset();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding module. Please try again.');
+            });
+        }
+
+        function submitAddTestCase() {
+            const testCaseTitleInput = document.getElementById('testCaseTitle');
+            if (!testCaseTitleInput.value.trim()) {
+                alert('Test case title is required');
+                return;
+            }
+
+            const data = {
+                title: testCaseTitleInput.value.trim(),
+                description: document.getElementById('testCaseDescription').value.trim(),
+                module_id: currentModuleId
+            };
+
+            fetch('/testcase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                testCaseModal.hide();
+                $('#addTestCaseForm')[0].reset();
+                loadModuleDetails(currentModuleId);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding test case. Please try again.');
+            });
+        }
+
+        function loadModuleDetails(moduleId) {
+            fetch(`/module/${moduleId}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#testCasesHeader').hide();
+                    displayTestCases(data.test_cases,data.module.name);
+                });
+        }
+
+        function displayTestCases(testCases,name) {
+            let testCasesList = '<table class="table">';
+                testCasesList += `
+                    <thead style = "border: 2px solid #000;">
+                        <tr>
+                            <th style="background-color: #054a83;color: white; max-width: 50px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</th>
+                            <th style="background-color: #054a83;color: white;">Description</th>
+                            <th style="background-color: #054a83;color: white;"></th>
+                            <th style="background-color: #054a83;color: white;">Actions<button class="add-buttons"  onclick="openAddTestCaseModal()" id="addTestCaseBtn">
+                                    +Add
+                                </button></</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                testCasesList += testCases.map(tc => `
+                    <tr id="testcase-row-${tc.id}" style = "border: 1px inset #ddd;">
+                        <td id="test-case-title-${tc.id}"><div><p class = short-bg>${tc.title}</p></div></td>
+                        <td id="test-case-description-${tc.id}" style="max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${tc.description || 'No description available'}</td>
+                        <td id="test-case-status-${tc.id}"><span class="badge bg-primary"></span></td>
+                        <td>
+                            <button style = "border: none;" onclick="viewTestCase('${tc.id}')">👁️</button>
+                            <button style = "border: none;" onclick="editTestCase('${tc.id}')">✏</button>
+                            <button style = "border: none;" onclick="deleteTestCase('${tc.id}')"><i class="fa fa-trash-o" style="font-size:20px"></i></button>
+                            <button style="border: none;" onclick="openFileUpload('${tc.id}')">📤</button>
+
+                        </td>
+                    </tr>
+                `).join('');
+
+                testCasesList += '</tbody></table>';
+
+            $('#testCasesList').html(testCases.length ? testCasesList : '<h1 style="font-size: 30px;">No test cases available in the selected Module</h1><button class="add-buttons"  onclick="openAddTestCaseModal()" id="addTestCaseBtn">Add test case</button>');
+        }
+
+        function editTestCase(id) {
+            fetch(`/testcase/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate the edit modal with the test case data
+                    $('#editTestCaseTitle').val(data.title);
+                    $('#editTestCaseDescription').val(data.description);
+                    //-----------------------------$('#editTestCaseStatus').val(data.status);
+
+                    // Show the edit modal
+                    $('#editTestCaseModal').modal('show');
+
+                    // Set up the save button click handler
+                    $('#saveEditedTestCase').off('click').on('click', () => {
+                        updateTestCase(id, {
+                            title: $('#editTestCaseTitle').val(),
+                            description: $('#editTestCaseDescription').val(),
+                            //=================================status: $('#editTestCaseStatus').val()
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function updateTestCase(id, data) {
+            fetch(`/testcase/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(updatedTestCase => {
+                // Update the test case row in the UI
+                $(`#test-case-title-${id}`).html(`<div><p class= "short-bg">${updatedTestCase.title}</p></div>`);
+                $(`#test-case-description-${id}`).text(updatedTestCase.description);
+                //=================
+
+                // Close the edit modal
+                $('#editTestCaseModal').modal('hide');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function deleteTestCase(id){ 
+            if (confirm("Are you sure you want to delete this test case?")){
+            fetch(`/testcase/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Deleted test case with ID: ${id}`);
+                    // Remove the test case row from the UI
+                    $(`#testcase-row-${id}`).remove();
+                } else {
+                    console.error(`Error deleting test case with ID: ${id}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }else{console.log("Deletion ignored")}
+        }
+
+        function updateParentModuleSelect() {
+            const select = $('#moduleParent');
+            select.empty();
+            select.append('<option value="">None</option>');
+            
+            function addOptions(nodes, level = 0) {
+                nodes.forEach(node => {
+                    const prefix = '-'.repeat(level);
+                    const name = node.text.split(' (')[0];
+                    select.append(`<option value="${node.id}">${prefix}${name}</option>`);
+                    if (node.children) {
+                        addOptions(node.children, level + 1);
+                    }
+                });
+            }
+            
+            addOptions(treeData);
+        }
+//for view
+        function viewTestCase(id) {
+            fetch(`/testcase/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate the edit modal with the test case data
+                $('#viewTestCaseTitle').val(data.title);
+                $('#viewTestCaseDescription').val(data.description);
+            //===================$('#viewTestCaseStatus').val(data.status);
+            const attachmentDiv = document.getElementById('viewTestCaseAttachment');
+            if (data.filename) {
+                attachmentDiv.innerHTML = `<a href="/download/${id}" target="_blank">${data.filename}</a>`;
+            } else {
+                attachmentDiv.innerHTML = 'No attachment available';
+            }
+
+            // Show the edit modal
+                $('#viewTestCaseModal').modal('show');
+
+            // Set up the save button click handler
+                $('#saveEditedTestCase').off('click').on('click', () => {
+                    viewshow(id, {
+                    title: $('#editTestCaseTitle').val(),
+                    description: $('#editTestCaseDescription').val(),
+                    //======================status: $('#editTestCaseStatus').val()
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+        }
+        function deleteModule() {
+            if (!currentModuleId) {
+                alert("Please select a module to delete.");
+                return;
+            }
+
+            
+            if (confirm("Are you sure you want to delete this module? This action cannot be undone.")) {
+                fetch(`/module/${currentModuleId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Module deleted successfully!");
+                        
+                        $('#moduleTree').jstree('delete_node', currentModuleId);
+                        
+                        currentModuleId = null;
+                        document.getElementById('addTestCaseBtn').disabled = true;
+                    } else {
+                        throw new Error("Failed to delete module.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting module:", error);
+                    alert("An error occurred while deleting the module. Please try again.");
+                });
+            }
+        }
+        function openFileUpload(testCaseId) {
+            document.getElementById('uploadTestCaseId').value = testCaseId;
+            $('#fileInput').val(''); // Reset the file input
+            $('#uploadFileModal').modal('show');
+        }
+
+        function submitFileUpload() {
+            const testCaseId = document.getElementById('uploadTestCaseId').value;
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch(`/testcase/${testCaseId}/upload`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('File uploaded successfully.');
+                    $('#uploadFileModal').modal('hide');
+                } else {
+                    throw new Error('File upload failed.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during file upload.');
+            });
+        }
+    </script>
+</body>
+</html>
