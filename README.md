@@ -1,6 +1,6 @@
 # About
 This is a Task given to me by DCKAP for interview process.
-The Goal is to develop a Dashboard mockup as show in the given file.
+The Goal is to develop a prototype of a mockup Dashboard.
 
 # Test Case Management System
 
@@ -28,14 +28,14 @@ A Flask-based web application for managing test cases in a hierarchical module s
 - Python 3.x
 - Flask
 - SQLAlchemy
-- python-dotenv
-- Slack API credentials (for notifications)
+- PostgreSQL
+- Slack API (for notifications)
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/ThunderCalw/dckap_rohith.git
 cd test-case-management
 ```
 
