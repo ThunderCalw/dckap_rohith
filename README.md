@@ -52,10 +52,10 @@ pip install -r requirements.txt
 
 4. Create a `.env` file in the root directory:
 ```
-DB_USER="your-username"           `default = postgres`
-DB_PASSWORD = "your-password"     `default = 1234`
-DB_HOST="your-hostrname"           `default = localhost`
-DB_PORT="your-port"                default = 5432`
+DB_USER="your-username"           
+DB_PASSWORD = "your-password"    
+DB_HOST="your-hostrname"           
+DB_PORT="your-port"                
 DB_NAME="your-DB-name"
 DB_URL = "postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@<DB_HOSTNAME>:<DB_PORT>/<DB_NAME>"
 SLACK_OUTH = "your_slack_token_here"
