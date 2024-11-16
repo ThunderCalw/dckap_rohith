@@ -36,7 +36,7 @@ A Flask-based web application for managing test cases in a hierarchical module s
 1. Clone the repository:
 ```bash
 git clone https://github.com/ThunderCalw/dckap_rohith.git
-cd test-case-management
+cd `your-folder-name`
 ```
 
 2. Create a virtual environment and activate it:
@@ -52,24 +52,24 @@ pip install -r requirements.txt
 
 4. Create a `.env` file in the root directory:
 ```
-DB_URL=sqlite:///test_cases.db
-SLACK_TOKEN=your_slack_token_here
-SLACK_CHANNEL=your_channel_here
+DB_USER="your-username"           `default = postgres`
+DB_PASSWORD = "your-password"     `default = 1234`
+DB_HOST="your-hostrname"           `default = localhost`
+DB_PORT="your-port"                default = 5432`
+DB_NAME="your-DB-name"
+DB_URL = "postgresql+psycopg2://<DB_USER>:<DB_PASSWORD>@<DB_HOSTNAME>:<DB_PORT>/<DB_NAME>"
+SLACK_OUTH = "your_slack_token_here"
+
 ```
 
 ## Running the Application
 
-1. Initialize the database:
-```bash
-python create_db.py
-```
-
-2. Start the Flask server:
+1. Start the Flask server:
 ```bash
 python app.py
 ```
 
-3. Access the application at `http://localhost:5000`
+2. Access the application at `http://localhost:5000`
 
 ## Usage
 
@@ -91,6 +91,14 @@ The system automatically sends Slack notifications for:
 - Test case updates
 - Test case deletion
 
+## Files(Explanation)
+
+1. app.py  -  (`main file containing flask`)
+2. create_db.py (`Used to initialize database`)
+3. models.py (`used to hold the database structure template`)
+4. web.py (`used for slack integration`)
+5. index.html (`contains all html and javascript code`)
+
 ## API Endpoints
 
 ### Modules
@@ -108,15 +116,3 @@ The system automatically sends Slack notifications for:
 ### File Management
 - `POST /testcase/<testcase_id>/upload` - Upload file attachment
 - `GET /download/<testcase_id>` - Download file attachment
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
