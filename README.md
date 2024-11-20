@@ -112,7 +112,15 @@ The system automatically sends Slack notifications for:
 - `GET /testcase/<testcase_id>` - Get test case details
 - `PUT /testcase/<testcase_id>` - Update test case
 - `DELETE /testcase/<testcase_id>` - Delete test case
-
 ### File Management
 - `POST /testcase/<testcase_id>/upload` - Upload file attachment
 - `GET /download/<testcase_id>` - Download file attachment
+### Final updates and remarks given
+- got rejected as this project didnt meet the expected requirements
+- Treeview drag and drop feature not implemented
+- certain parts is directly implemented using ai assitance
+- file uploaded could only be downloaded.No direct view without download was implemented.
+- while deleting some module certain parts are left behind and not deleted.
+- slackapi notification was sent to my own channel.A public channel was expected.
+
+
